@@ -68,7 +68,7 @@ def getTracks():
     sp = spotipy.Spotify(auth=token_info['access_token'])
     
     # Replace 'YOUR_TAYLOR_SWIFT_SPOTIFY_ID' with Taylor Swift's Spotify ID.
-    taylor_swift_id = '6HaGTQPmzraVmaVxvz6EUc'
+    taylor_swift_id = '06HL4z0CvFAxyc27GXpf02'
 
     # Get the user's top tracks for the long-term
     top_tracks = sp.current_user_top_tracks(limit=1000, time_range=LONG_TERM)
