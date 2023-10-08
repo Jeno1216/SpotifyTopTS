@@ -1,7 +1,7 @@
 {% macro receiptContainer(display_name, songs, id, duration) -%}
-<div class="receiptContainer" id="{{ id }}">
+<div class="receiptContainer" id="{{ id }}" style="display: none;">
     <h2 class="logo">
-        JENO x SHIG
+        MY TS TOP TRACKS
     </h2>
     <p class="period">
         {{ duration }}
@@ -27,7 +27,7 @@
                 </td>
             </tr>
         </thead>
-    {% for song in songs %}
+        {% for song in songs %}
         <tr>
             <td class="begin">
                 {{ loop.index }}
@@ -39,7 +39,7 @@
                 {{ song.duration_ms | mmss }}
             </td>
         </tr>
-    {% endfor %}
+        {% endfor %}
         <tr class="total-counts">
             <td class="begin" colspan="2">
                 ITEM COUNT:
@@ -57,7 +57,7 @@
             </td>
         </tr>
     </table>
-        <p class="date">
+    <p class="date">
         CARD #: **** **** **** {{ currentTime.tm_year }}
     </p>
     <p class="date">
@@ -73,10 +73,7 @@
         <img style="width: 80%" src="{{ url_for('static', filename='barcode.png') }}">
         <p class="website">
             receiptify.eriktoor.com
-    </p>
-
+        </p>
+    </div>
 </div>
-</div>
-
-
 {%- endmacro %}

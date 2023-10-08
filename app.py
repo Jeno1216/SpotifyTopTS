@@ -66,20 +66,36 @@ def getTracks():
         return redirect("/")
     
     sp = spotipy.Spotify(auth=token_info['access_token'])
-    
+
+    current_user_name = sp.current_user()['display_name']
+
     # Replace 'YOUR_TAYLOR_SWIFT_SPOTIFY_ID' with Taylor Swift's Spotify ID.
     taylor_swift_id = '06HL4z0CvFAxyc27GXpf02'
 
-    # Get the user's top tracks for the long-term
-    top_tracks = sp.current_user_top_tracks(limit=1000, time_range=LONG_TERM)
+    # Get the user's top tracks for different time ranges
+    long_term_tracks = sp.current_user_top_tracks(limit=1000, time_range=LONG_TERM)
+    medium_term_tracks = sp.current_user_top_tracks(limit=1000, time_range=MEDIUM_TERM)
+    short_term_tracks = sp.current_user_top_tracks(limit=1000, time_range=SHORT_TERM)
 
-    # Filter the top tracks to get Taylor Swift's tracks
-    taylor_swift_tracks = [track for track in top_tracks['items'] if any(artist['id'] == taylor_swift_id for artist in track['artists'])]
+
+    # Filter the top tracks to get Taylor Swift's tracks for each time range
+    long_term_taylor_swift_tracks = [track for track in long_term_tracks['items'] if any(artist['id'] == taylor_swift_id for artist in track['artists'])]
+    medium_term_taylor_swift_tracks = [track for track in medium_term_tracks['items'] if any(artist['id'] == taylor_swift_id for artist in track['artists'])]
+    short_term_taylor_swift_tracks = [track for track in short_term_tracks['items'] if any(artist['id'] == taylor_swift_id for artist in track['artists'])]
 
     # Take the top 10 Taylor Swift tracks for the long-term
-    top_10_taylor_swift_songs = taylor_swift_tracks[:10]
+    short_term_songs = short_term_taylor_swift_tracks[:10]
+    medium_term_songs = medium_term_taylor_swift_tracks[:10]
+    long_term_songs = long_term_taylor_swift_tracks[:10]
 
-    return render_template('receipt.html', user_display_name="", songs=top_10_taylor_swift_songs, currentTime=gmtime())
+    return render_template(
+        'receipt.html',
+        user_display_name=current_user_name,
+        long_term_songs=long_term_songs,
+        medium_term_songs=medium_term_songs,
+        short_term_songs=short_term_songs,
+        currentTime=gmtime()
+    )
 
 
 @app.template_filter('strftime')

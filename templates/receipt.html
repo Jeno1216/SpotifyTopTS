@@ -81,23 +81,23 @@
     <div style="width: 100%; height: auto" class="buttons">
         <center>
             <div>
-                <button onclick="showContent('short_term_receipt')" class="generatePicButton">Short Term Receipt</button>
-                <button onclick="showContent('medium_term_receipt')" class="generatePicButton">Medium Term Receipt</button>
-                <button onclick="showContent('long_term_receipt')" class="generatePicButton">Long Term Receipt</button>
+                <button onclick="showContent('short_term_receipt')" class="generatePicButton">This Month</button>
+                <button onclick="showContent('medium_term_receipt')" class="generatePicButton">Last 6 Months</button>
+                <button onclick="showContent('long_term_receipt')" class="generatePicButton">All Time </button>
             </div>
         </center>
     </div>
 
-<div style="width: 100%; height: auto" class="receiptContainerWrapper">
-    <center>
-        {{ receiptContainer(user_display_name, songs, 'short_term_receipt', 'Taylor Swift\'s Top Tracks') }}
-    </center>
-</div>
+    <div style="width: 100%; height: auto" class="receiptContainerWrapper">
+        <center>
+            {{ receiptContainer(user_display_name, short_term_songs, 'short_term_receipt', 'My Taylor Swift\'s Top Tracks (This Month)') }}
+            {{ receiptContainer(user_display_name, medium_term_songs, 'medium_term_receipt', 'My Taylor Swift\'s Top Tracks (Last 6 Months)') }}
+            {{ receiptContainer(user_display_name, long_term_songs, 'long_term_receipt', 'My Taylor Swift\'s Top Tracks (All Time)') }}
+        </center>
+    </div>
 
     <center>
         <button class="generatePicButton" id="downloadPicButton">Download</button>
     </center>
-
 </body>
-
 </html>
