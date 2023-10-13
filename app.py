@@ -21,25 +21,21 @@ def create_spotify_oauth():
         scope="user-top-read user-library-read"
     )
 
+    
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
 app.config['SESSION_COOKIE_NAME'] = 'Eriks Cookie'
 
 @app.route('/')
 def index():
-    if 'username' in session:
-        return render_template('index.html', title='Welcome', username=session['username'])
-    else:
-        return redirect(url_for('login'))
+    name = 'username'
+    return render_template('index.html', title='Welcome', username=name)
 
 @app.route('/login')
 def login():
-    if 'username' in session:
-        return redirect(url_for('index'))
-    else:
-        sp_oauth = create_spotify_oauth()
-        auth_url = sp_oauth.get_authorize_url()
-        return redirect(auth_url)
+    sp_oauth = create_spotify_oauth()
+    auth_url = sp_oauth.get_authorize_url()
+    return redirect(auth_url)
 
 @app.route('/redirect')
 def redirectPage():
@@ -48,8 +44,6 @@ def redirectPage():
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
     session[TOKEN_CODE] = token_info    
-    sp = spotipy.Spotify(auth=token_info['access_token'])
-    session['username'] = sp.current_user()['display_name']
     return redirect(url_for("getTracks", _external=True))
 
 
@@ -66,8 +60,10 @@ def get_token():
 
 @app.route('/getTracks')
 def getTracks():
-    token_info = get_token()
-    if token_info is None:
+    try:
+        token_info = get_token()
+    except:
+        print("user not logged in")
         return redirect("/")
     
     sp = spotipy.Spotify(auth=token_info['access_token'])
