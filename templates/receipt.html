@@ -160,10 +160,10 @@ function scrollToElement(elementId) {
                     </p>                    
 
                     <div>
-                        <a style="text-decoration: none; cursor: pointer;" onclick="scrollToElement('receiptContainerWrapper')" class="d-flex w-100 gap-3 p-3 flex-lg-row flex-md-row flex-column align-items-center justify-content-center">
-                            <button onclick="showContent('short_term_receipt')" style="width: 200px;" class="time  generatePicButton"> This Month </button> <br>
-                            <button onclick="showContent('medium_term_receipt')" style="width: 200px;" class="time generatePicButton"> Last 6 Month </button><br>
-                            <button onclick="showContent('long_term_receipt')" style="width: 200px;" class="time  generatePicButton"> All Time </button>    
+                        <a style="text-decoration: none; cursor: pointer;" onclick="scrollToElement('receiptContainerWrapper')" class="d-flex w-100  flex-lg-row flex-md-row flex-column align-items-center justify-content-center">
+                            <button onclick="showContent('short_term_receipt')" style="width: 200px; margin: 10px;" class="time  generatePicButton"> This Month </button>
+                            <button onclick="showContent('medium_term_receipt')" style="width: 200px; margin: 10px;" class="time generatePicButton"> Last 6 Month </button>
+                            <button onclick="showContent('long_term_receipt')" style="width: 200px; margin: 10px;" class="time  generatePicButton"> All Time </button>    
                         </a>
                         <br>
         
@@ -199,7 +199,7 @@ function scrollToElement(elementId) {
                     {{ receiptContainer(user_display_name, long_term_songs, 'long_term_receipt', 'My TS Top Tracks [All Time]') }}
                 </div>
                 <div class="w-100 text-center mb-3">
-                    <button class="generatePicButton downloadButton" id="downloadPicButton">Download</button>
+                    <button class="generatePicButton downloadButton" id="downloadPicButton"> <i class="bi bi-download"></i> Download</button>
                 </div>
 
                 </div>
