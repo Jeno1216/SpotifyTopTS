@@ -1,47 +1,50 @@
 from flask import Flask, request, url_for, session, redirect, render_template
 import spotipy
 from spotipy.oauth2 import SpotifyOAuth
-import time 
-from time import gmtime, strftime
 import os
-import uuid  # Import the UUID module
+import uuid
 
-CLIENT_ID = "86a224772b124b51989123bed131d2e4"
-CLIENT_SECRET = "57da38d12b31449a80df5b37256d7a29"
-SECRET_KEY = "asdf"
+CLIENT_ID = "your-client-id"
+CLIENT_SECRET = "your-client-secret"
+SECRET_KEY = "your-secret-key"
 TOKEN_CODE = "token_info"
 MEDIUM_TERM = "medium_term"
 SHORT_TERM = "short_term"
 LONG_TERM = "long_term"
 
+app = Flask(__name__)
+
+# Generate a unique session key for each user using UUID
+def generate_secret_key():
+    return str(uuid.uuid4())
+
+# Use the IP address as a session key for separate sessions
+def get_session_key():
+    return str(request.remote_addr)
+
+# Create a SpotifyOAuth instance with the required credentials
 def create_spotify_oauth():
     return SpotifyOAuth(
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
-        redirect_uri=url_for("redirectPage",_external=True), 
+        redirect_uri=url_for("redirectPage", _external=True),
         scope="user-top-read user-library-read user-read-recently-played"
     )
-
-app = Flask(__name__)
-app.secret_key = SECRET_KEY
-
-
 
 @app.route('/')
 def index():
     name = 'username'
     return render_template('index.html', title='Welcome', username=name)
 
-# Generate a unique secret key for each session using UUID
-def generate_secret_key():
-    return str(uuid.uuid4())
-
 @app.route('/login')
 def login():
     sp_oauth = create_spotify_oauth()
 
-    # Set a unique secret key for the user's session
-    session['secret_key'] = generate_secret_key()
+    # Get a unique session key for the user
+    session_key = get_session_key()
+
+    # Set the session secret key based on the session key
+    app.secret_key = f'SECRET_KEY_{session_key}'
 
     auth_url = sp_oauth.get_authorize_url()
     return redirect(auth_url)
@@ -49,22 +52,16 @@ def login():
 @app.route('/redirect')
 def redirectPage():
     sp_oauth = create_spotify_oauth()
-    session.clear() 
+    session.clear()
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
     session[TOKEN_CODE] = token_info
-    print(f"Access Token: {token_info['access_token']}")  # Add this line
     return redirect(url_for("getTracks", _external=True))
 
 def get_token():
-    secret_key = session.get('secret_key')  # Get the session's secret key
-
-    # Generate a separate session key for each user if it doesn't exist
-    if not secret_key:
-        secret_key = generate_secret_key()
-        session['secret_key'] = secret_key
-
+    sp_oauth = create_spotify_oauth()
     token_info = session.get(TOKEN_CODE, None)
+
     if not token_info:
         raise Exception("User not logged in")
 
@@ -78,15 +75,14 @@ def get_token():
 
     return token_info
 
-
 @app.route('/getTracks')
 def getTracks():
     try:
         token_info = get_token()
     except:
-        print("user not logged in")
+        print("User not logged in")
         return redirect("/")
-    
+
     sp = spotipy.Spotify(auth=token_info['access_token'])
     current_user_name = sp.current_user()['display_name']
 
@@ -97,7 +93,6 @@ def getTracks():
     long_term_tracks = sp.current_user_top_tracks(limit=1000, time_range=LONG_TERM)
     medium_term_tracks = sp.current_user_top_tracks(limit=1000, time_range=MEDIUM_TERM)
     short_term_tracks = sp.current_user_top_tracks(limit=1000, time_range=SHORT_TERM)
-
 
     # Filter the top tracks to get Taylor Swift's tracks for each time range
     long_term_taylor_swift_tracks = [track for track in long_term_tracks['items'] if any(artist['id'] == taylor_swift_id for artist in track['artists'])]
@@ -117,20 +112,6 @@ def getTracks():
         short_term_songs=short_term_songs,
         currentTime=gmtime()
     )
-
-
-@app.template_filter('strftime')
-def _jinja2_filter_datetime(date, fmt=None):
-    return strftime("%a, %d %b %Y", date)
-
-@app.template_filter('mmss')
-def _jinja2_filter_miliseconds(time, fmt=None):
-    time = int(time / 1000)
-    minutes = time // 60 
-    seconds = time % 60 
-    if seconds < 10: 
-        return str(minutes) + ":0" + str(seconds)
-    return str(minutes) + ":" + str(seconds ) 
 
 if __name__ == '__main__':
     app.run(debug=True)
