@@ -3,10 +3,15 @@ import spotipy
 from spotipy.oauth2 import SpotifyOAuth
 import os
 import uuid
+import time
+from time import gmtime
+import secrets
+import string
 
+
+# Replace with your Spotify application credentials
 CLIENT_ID = "86a224772b124b51989123bed131d2e4"
 CLIENT_SECRET = "57da38d12b31449a80df5b37256d7a29"
-SECRET_KEY = "your-secret-key"
 TOKEN_CODE = "token_info"
 MEDIUM_TERM = "medium_term"
 SHORT_TERM = "short_term"
@@ -30,6 +35,11 @@ def create_spotify_oauth():
         redirect_uri=url_for("redirectPage", _external=True),
         scope="user-top-read user-library-read user-read-recently-played"
     )
+
+# Generate a random string of 24 characters for your SECRET_KEY
+SECRET_KEY = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(24))
+
+app.secret_key = SECRET_KEY  # Set a meaningful secret key
 
 @app.route('/')
 def index():
