@@ -4,8 +4,8 @@ from spotipy.oauth2 import SpotifyOAuth
 import os
 import uuid
 
-CLIENT_ID = "your-client-id"
-CLIENT_SECRET = "your-client-secret"
+CLIENT_ID = "86a224772b124b51989123bed131d2e4"
+CLIENT_SECRET = "57da38d12b31449a80df5b37256d7a29"
 SECRET_KEY = "your-secret-key"
 TOKEN_CODE = "token_info"
 MEDIUM_TERM = "medium_term"
