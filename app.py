@@ -13,6 +13,7 @@ MEDIUM_TERM = "medium_term"
 SHORT_TERM = "short_term"
 LONG_TERM = "long_term"
 
+
 def create_spotify_oauth():
     return SpotifyOAuth(
         client_id=CLIENT_ID,
@@ -27,19 +28,14 @@ app.config['SESSION_COOKIE_NAME'] = 'Eriks Cookie'
 
 @app.route('/')
 def index():
-    if 'username' in session:
-        return render_template('index.html', title='Welcome', username=session['username'])
-    else:
-        return redirect(url_for('login'))
+    name = 'username'
+    return render_template('index.html', title='Welcome', username=name)
 
 @app.route('/login')
 def login():
-    if 'username' in session:
-        return redirect(url_for('index'))
-    else:
-        sp_oauth = create_spotify_oauth()
-        auth_url = sp_oauth.get_authorize_url()
-        return redirect(auth_url)
+    sp_oauth = create_spotify_oauth()
+    auth_url = sp_oauth.get_authorize_url()
+    return redirect(auth_url)
 
 @app.route('/redirect')
 def redirectPage():
@@ -48,58 +44,52 @@ def redirectPage():
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
     session[TOKEN_CODE] = token_info    
-    sp = spotipy.Spotify(auth=token_info['access_token'])
-    session['username'] = sp.current_user()['display_name']
     return redirect(url_for("getTracks", _external=True))
 
 
-def get_token():
+def get_token(): 
     token_info = session.get(TOKEN_CODE, None)
-    if not token_info:
-        return None  # Return None if no token is found
+    if not token_info: 
+        raise "exception"
     now = int(time.time())
-    is_expired = token_info['expires_at'] - now < 60
-    if is_expired:
+    is_expired = token_info['expires_at'] - now < 60 
+    if (is_expired): 
         sp_oauth = create_spotify_oauth()
         token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
-    return token_info
+    return token_info 
 
 @app.route('/getTracks')
 def getTracks():
-    token_info = get_token()
-    if token_info is None:
+    try: 
+        token_info = get_token()
+    except: 
+        print("user not logged in")
         return redirect("/")
-    
-    sp = spotipy.Spotify(auth=token_info['access_token'])
-    current_user_name = sp.current_user()['display_name']
-
-    # Replace 'YOUR_TAYLOR_SWIFT_SPOTIFY_ID' with Taylor Swift's Spotify ID.
-    taylor_swift_id = '06HL4z0CvFAxyc27GXpf02'
-
-    # Get the user's top tracks for different time ranges
-    long_term_tracks = sp.current_user_top_tracks(limit=1000, time_range=LONG_TERM)
-    medium_term_tracks = sp.current_user_top_tracks(limit=1000, time_range=MEDIUM_TERM)
-    short_term_tracks = sp.current_user_top_tracks(limit=1000, time_range=SHORT_TERM)
-
-
-    # Filter the top tracks to get Taylor Swift's tracks for each time range
-    long_term_taylor_swift_tracks = [track for track in long_term_tracks['items'] if any(artist['id'] == taylor_swift_id for artist in track['artists'])]
-    medium_term_taylor_swift_tracks = [track for track in medium_term_tracks['items'] if any(artist['id'] == taylor_swift_id for artist in track['artists'])]
-    short_term_taylor_swift_tracks = [track for track in short_term_tracks['items'] if any(artist['id'] == taylor_swift_id for artist in track['artists'])]
-
-    # Take the top 10 Taylor Swift tracks for the long-term
-    short_term_songs = short_term_taylor_swift_tracks[:10]
-    medium_term_songs = medium_term_taylor_swift_tracks[:10]
-    long_term_songs = long_term_taylor_swift_tracks[:10]
-
-    return render_template(
-        'receipt.html',
-        user_display_name=current_user_name,
-        long_term_songs=long_term_songs,
-        medium_term_songs=medium_term_songs,
-        short_term_songs=short_term_songs,
-        currentTime=gmtime()
+    sp = spotipy.Spotify(
+        auth=token_info['access_token'],
     )
+
+    current_user_name = sp.current_user()['display_name']
+    short_term = sp.current_user_top_tracks(
+        limit=10,
+        offset=0,
+        time_range=SHORT_TERM,
+    )
+    medium_term = sp.current_user_top_tracks(
+        limit=10,
+        offset=0,
+        time_range=MEDIUM_TERM,
+    )
+    long_term = sp.current_user_top_tracks(
+        limit=10,
+        offset=0,
+        time_range=LONG_TERM,
+    )
+
+    if os.path.exists(".cache"): 
+        os.remove(".cache")
+
+    return render_template('receipt.html', user_display_name=current_user_name, short_term=short_term, medium_term=medium_term, long_term=long_term, currentTime=gmtime())
 
 
 @app.template_filter('strftime')
@@ -114,6 +104,6 @@ def _jinja2_filter_miliseconds(time, fmt=None):
     if seconds < 10: 
         return str(minutes) + ":0" + str(seconds)
     return str(minutes) + ":" + str(seconds ) 
-
+    
 if __name__ == '__main__':
     app.run(debug=True)
