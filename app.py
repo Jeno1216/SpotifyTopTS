@@ -66,7 +66,6 @@ def getTracks():
         return redirect("/")
     
     sp = spotipy.Spotify(auth=token_info['access_token'])
-
     current_user_name = sp.current_user()['display_name']
 
     # Replace 'YOUR_TAYLOR_SWIFT_SPOTIFY_ID' with Taylor Swift's Spotify ID.

@@ -28,7 +28,6 @@
 }
 
   .receiptContainer {
-    background-image: url(wrinkled-paper.jpg);
     background-position: center;
     width: 340px;
     filter: brightness(110%);
@@ -76,15 +75,34 @@ table {
   width: auto;
 }
 
-.spotifyButton {
-  margin: 2vh auto;
+.spotifyButton, .time {
+  margin: auto;
   text-align: center;
   text-decoration: none;
-  padding: 10px 40px;
+  padding: 10px 20px;
   background-color: #ffffff;
   border: none;
   cursor: pointer;
   color: #29962e;
   font-weight: bold;
+  border-radius: 10px;
+  transition: .3s;
+  /* Make the button focusable */
+  tabindex: 0;
+  /* Add an outline when focused (optional, but recommended for accessibility) */
+  outline: none;
 }
 
+.spotifyButton:hover, .time:hover {
+  background-color: #29962e;
+  color: white;
+}
+
+.spotifyButton:focus, .time:focus {
+  background-color: #29962e;
+  color: white;
+}
+
+.downloadButton{
+  background-color: #29962e;
+}

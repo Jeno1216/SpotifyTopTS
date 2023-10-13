@@ -1,21 +1,76 @@
-<html>
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.5.0-beta4/html2canvas.min.js"></script>
+    <link rel="icon" href="../static/icon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="../static/icon.ico" type="image/x-icon">
+
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <title>{{ title }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>My Website</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link href="https://fonts.cdnfonts.com/css/metropolis-2" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+
+
+    <style>
+        .receiptContainerWrapperContent {
+    background-color: transparent !important;
+}
+
+            .content {
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+
+        /* Small screen background */
+        @media (max-width: 890px) {
+            .content {
+                background-image: url('../static/tsbg2.png');
+            }
+            .tsbg{
+                display: none;
+            }
+        }
+        
+        /* Large screen background */
+        @media (min-width: 891px) {
+            .content {
+                background-image: url('../static/bglight.png');
+            }
+        }
+        #container {
+            overflow: hidden;
+            position: relative;
+            width: 100%;
+            height: 200px;
+        }
+        #animated-div {
+            position: absolute;
+            width: 500%;
+            height: 200px;
+            background: url('../static/taylor2.png') repeat-x;
+            animation: scroll 30s linear infinite;
+        }
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+    </style>
 </head>
+<body onclick="playAudio()" onload="showContent('short_term_receipt')">
 
-<body>
-
-    {% from "receiptContainer.html" import receiptContainer with context %}
-
+        {% from "receiptContainer.html" import receiptContainer with context %}
+    
     <script>
 
         var activeReceipt;
-
-
         function showContent(id) {
             // set all of the other ones to invisible
             for (let i = 0; i < document.querySelectorAll(".receiptContainer").length; i++) {
@@ -27,77 +82,176 @@
         }
 
         function hiddenClone(element) {
-            // Create clone of element
-            var clone = element.cloneNode(true);
+    // Create clone of element
+    var clone = element.cloneNode(true);
 
-            // Position element relatively within the
-            // body but still out of the viewport
-            var style = clone.style;
-            style.position = "relative";
-            style.top = window.innerHeight + "px";
-            style.left = 0;
-            // Append clone to body and return the clone
-            document.body.appendChild(clone);
-            return clone;
-        }
+    // Set the clone's width to match the container's width
+    var containerWidth = element.offsetWidth;
+    clone.style.width = containerWidth + "px";
 
-        $(document).ready(function () {
+    // Position element relatively within the body but still out of the viewport
+    var style = clone.style;
+    style.position = "relative";
+    style.top = window.innerHeight + "px";
+    style.left = 0;
 
-            // Global variable
-            var element = $(".receiptContainerWrapper");
+    // Append clone to body and apply transparent background to clone
+    document.body.appendChild(clone);
+    clone.style.backgroundColor = "transparent";
 
-            // Global variable
-            var getCanvas;
+    return clone;
+}
 
-            $("#downloadPicButton").on('click', function () {
-                var offScreen = document.querySelector(".receiptContainerWrapper");
-                window.scrollTo(0, 0);
-                var clone = hiddenClone(offScreen);
-                // Use clone with htm2canvas and delete clone
-                html2canvas(clone, { scrollY: -window.scrollY }).then((canvas) => {
-                    var dataURL = canvas.toDataURL("image/png", 1.0);
-                    document.body.removeChild(clone);
-                    var link = document.createElement("a");
-                    link.href = dataURL;
-                    link.download = `${activeReceipt}.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                });
-            });
+$(document).ready(function () {
+    var element = $(".receiptClone");  // Select the clone element with the added class
 
+    $("#downloadPicButton").on('click', function () {
+        var offScreen = document.querySelector(".receiptContainerWrapperContent");
+        var clone = hiddenClone(offScreen);
+        clone.style.backgroundColor = "transparent";  // Set the background color to transparent
+        var scale = 2; // Increase the scale for higher quality (you can adjust this value)
+        html2canvas(clone, {
+            scrollY: -window.scrollY,
+            backgroundColor: null, // Set backgroundColor to null
+            scale: scale // Set the scale for higher quality
+        }).then((canvas) => {
+            var dataURL = canvas.toDataURL("image/png", 1.0);
+            document.body.removeChild(clone);
+            var link = document.createElement("a");
+            link.href = dataURL;
+            link.download = `${activeReceipt}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         });
+    });
+});
+function scrollToElement(elementId) {
+    const element = document.getElementById(elementId);
+
+    if (element) {
+        if (window.innerWidth <= 768) { // Adjust the screen size condition as needed
+            element.scrollIntoView({
+            behavior: "smooth"
+        });
+        } else {
+            // If the screen size is not small, scroll normally (without smooth scroll)
+            window.scrollTo(0, element.offsetTop);
+        }
+    }
+}
 
     </script>
 
-    <div>
-        <center>
-            <h1>Receiptify</h1>
-            <h2>Top Track Generator</h2>    
-        </center>
-    </div>
+<div class="position-fixed  w-100 p-3" style="top: 0px; left: 0px; background-color: rgba(0, 0, 0, 0.682); z-index: 999; ">
+    <img src="../static/logo.png" alt="" width="120px">
+</div>
 
+<div class="content"  >
+    <div class="d-flex justify-content-center align-items-center vh-100 p-lg-5" style="min-height: 100vh;">
+        <div class="row col-12 d-flex justify-content-center align-items-center   mt-lg-4 mt-md-0  mt-5">
+                <div class=" col-lg-6 col-md-12 col-12 d-flex flex-column mt-lg-0 mt-md-0 mt-5 mb-3" data-aos="fade-down">
+                <img width="100%" src="../static/drop.png" alt="">
+                <br>
+                    <p style="font-size: 14px; color: white;">
+                        This Month: Your top 10 tracks this month. 
+                        Last 6 Months: Yout top 10 tracks from the last six months.
+                        All Time: Your overall top 10 tracks of all time.
+                    </p>                    
 
-    <div style="width: 100%; height: auto" class="buttons">
-        <center>
-            <div>
-                <button onclick="showContent('short_term_receipt')" class="generatePicButton">This Month</button>
-                <button onclick="showContent('medium_term_receipt')" class="generatePicButton">Last 6 Months</button>
-                <button onclick="showContent('long_term_receipt')" class="generatePicButton">All Time </button>
+                    <div>
+                        <a style="text-decoration: none; cursor: pointer;" onclick="scrollToElement('receiptContainerWrapper')" class="d-flex w-100 gap-3 p-3 flex-lg-row flex-md-row flex-column align-items-center justify-content-center">
+                            <button onclick="showContent('short_term_receipt')" style="width: 200px;" class="time  generatePicButton"> This Month </button> <br>
+                            <button onclick="showContent('medium_term_receipt')" style="width: 200px;" class="time generatePicButton"> Last 6 Month </button><br>
+                            <button onclick="showContent('long_term_receipt')" style="width: 200px;" class="time  generatePicButton"> All Time </button>    
+                        </a>
+                        <br>
+        
+        
+                        <div class="w-100 m-0 tsfooter d-flex flex-column align-items-center justify-content-start">
+                            <div id="container">
+                                <div id="animated-div"></div>
+                            </div>
+                            
+                            <iframe class=" mx-5 " style="margin-top: -200px; z-index: 999;"  src="https://giphy.com/embed/vdbyUtn36F0Z0IGd6F" width="100" height="200"
+                            frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+                        </div>
+        
+                    </div>
+                
+
+                <audio id="myAudio">
+                    <source src="../static/sparksfly.mp3" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <script>
+                    function playAudio() {
+                        document.getElementById("myAudio").play();
+                    }
+                </script>
             </div>
-        </center>
-    </div>
 
-    <div style="width: 100%; height: auto" class="receiptContainerWrapper">
-        <center>
-            {{ receiptContainer(user_display_name, short_term_songs, 'short_term_receipt', 'My Taylor Swift\'s Top Tracks (This Month)') }}
-            {{ receiptContainer(user_display_name, medium_term_songs, 'medium_term_receipt', 'My Taylor Swift\'s Top Tracks (Last 6 Months)') }}
-            {{ receiptContainer(user_display_name, long_term_songs, 'long_term_receipt', 'My Taylor Swift\'s Top Tracks (All Time)') }}
-        </center>
-    </div>
+            <div class="col-lg-5  col-md-12 col-12 m-0 p-0" data-aos="fade-left" data-aos-delay="300">
+                <div class="receiptContainerWrapper" id="receiptContainerWrapper" ></div>
+                <div class="receiptContainerWrapperContent receiptClone d-flex justify-content-center" style="overflow: hidden; width: 100%;">
+                    {{ receiptContainer(user_display_name, short_term_songs, 'short_term_receipt', 'My TS Top Tracks [This Month]') }}
+                    {{ receiptContainer(user_display_name, medium_term_songs, 'medium_term_receipt', 'My TS Top Tracks [Last 6 Months]') }}
+                    {{ receiptContainer(user_display_name, long_term_songs, 'long_term_receipt', 'My TS Top Tracks [All Time]') }}
+                </div>
+                <div class="w-100 text-center mb-3">
+                    <button class="generatePicButton downloadButton" id="downloadPicButton">Download</button>
+                </div>
 
-    <center>
-        <button class="generatePicButton" id="downloadPicButton">Download</button>
-    </center>
+                </div>
+    
+            </div>
+
+        
+                                    
+
+
+        </div>
+    </div>
+</div>
+
+
+
+
+    <script>
+        // Function to create and show the message
+        function showClickAnywhereMessage() {
+            // Create a div element for the message
+            var messageDiv = document.createElement("div");
+            messageDiv.style.position = "fixed";
+            messageDiv.style.top = "10px";
+            messageDiv.style.left = "10px";
+            messageDiv.style.padding = "10px";
+            messageDiv.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
+            messageDiv.style.color = "white";
+            messageDiv.style.zIndex = "9999";
+            messageDiv.innerText = "CLICK AND SOUND ON!";
+
+            // Append the message div to the body
+            document.body.appendChild(messageDiv);
+
+            // Add a click event listener to the document to dismiss the message
+            document.addEventListener("click", function() {
+                // Remove the message div from the body
+                document.body.removeChild(messageDiv);
+            });
+        }
+
+        // Call the function to show the message when the page loads
+        window.addEventListener("load", showClickAnywhereMessage);
+    </script>
+    <script>
+        AOS.init({
+    duration: 2000,  // Animation duration in milliseconds
+    once: true,      // Only animate elements once
+    });
+    
+    </script>
+    
+
 </body>
 </html>
