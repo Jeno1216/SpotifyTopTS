@@ -24,7 +24,7 @@ def create_spotify_oauth():
     
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
-app.config['SESSION_COOKIE_NAME'] = 'Eriks Cookie'
+app.config['SESSION_COOKIE_NAME'] = 'Eriks_Cookie_' + session.get('username', 'default')
 
 @app.route('/')
 def index():
