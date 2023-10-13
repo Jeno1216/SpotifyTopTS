@@ -213,37 +213,6 @@ function scrollToElement(elementId) {
         </div>
     </div>
 </div>
-
-
-
-
-    <script>
-        // Function to create and show the message
-        function showClickAnywhereMessage() {
-            // Create a div element for the message
-            var messageDiv = document.createElement("div");
-            messageDiv.style.position = "fixed";
-            messageDiv.style.top = "10px";
-            messageDiv.style.left = "10px";
-            messageDiv.style.padding = "10px";
-            messageDiv.style.backgroundColor = "rgba(0, 0, 0, 0.7)";
-            messageDiv.style.color = "white";
-            messageDiv.style.zIndex = "9999";
-            messageDiv.innerText = "CLICK AND SOUND ON!";
-
-            // Append the message div to the body
-            document.body.appendChild(messageDiv);
-
-            // Add a click event listener to the document to dismiss the message
-            document.addEventListener("click", function() {
-                // Remove the message div from the body
-                document.body.removeChild(messageDiv);
-            });
-        }
-
-        // Call the function to show the message when the page loads
-        window.addEventListener("load", showClickAnywhereMessage);
-    </script>
     <script>
         AOS.init({
     duration: 2000,  // Animation duration in milliseconds
