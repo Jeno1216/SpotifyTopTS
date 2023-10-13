@@ -16,6 +16,7 @@
     <link href="https://fonts.cdnfonts.com/css/metropolis-2" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+    <script src="https://unpkg.com/vanilla-tilt"></script>
 
 
     <style>
@@ -192,19 +193,28 @@ function scrollToElement(elementId) {
             </div>
 
             <div class="col-lg-5  col-md-12 col-12 m-0 p-0" data-aos="fade-left" data-aos-delay="300">
-                <div class="receiptContainerWrapper" id="receiptContainerWrapper" ></div>
                 <div class="receiptContainerWrapperContent receiptClone d-flex justify-content-center" style="overflow: hidden; width: 100%;">
                     {{ receiptContainer(user_display_name, short_term_songs, 'short_term_receipt', 'My TS Top Tracks [This Month]') }}
                     {{ receiptContainer(user_display_name, medium_term_songs, 'medium_term_receipt', 'My TS Top Tracks [Last 6 Months]') }}
                     {{ receiptContainer(user_display_name, long_term_songs, 'long_term_receipt', 'My TS Top Tracks [All Time]') }}
                 </div>
+                
+                <script>
+                    VanillaTilt.init(document.querySelectorAll(".receiptClone"), {
+                        max: 25,
+                        speed: 400
+                    });
+                </script>
                 <div class="w-100 text-center mb-3">
+                    <p class=" d-lg-none d-md-none d-sm-none d-block" style="font-size: 10px; color: rgb(227, 227, 227);">[tilt your phone]</p>
+
                     <button class="generatePicButton downloadButton" id="downloadPicButton"> <i class="bi bi-download"></i> Download</button>
                 </div>
 
                 </div>
     
             </div>
+            
 
         
                                     
@@ -220,6 +230,22 @@ function scrollToElement(elementId) {
     });
     
     </script>
+
+<script>
+    var container = document.getElementById('receiptContainer');
+    var items = container.getElementsByClassName('receiptClone');
+
+    for (var i = 0; i < items.length; i++) {
+        items[i].addEventListener('mouseenter', function() {
+            this.style.transform = "scale(1.1)";
+        });
+
+        items[i].addEventListener('mouseleave', function() {
+            this.style.transform = "scale(1)";
+        });
+    }
+</script>
+
     
 
 </body>
