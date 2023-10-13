@@ -48,7 +48,12 @@ def redirectPage():
     session.clear()
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
-    session[TOKEN_CODE] = token_info    
+    session[TOKEN_CODE] = token_info
+
+    # Clear .cache file after new user logs in
+    if os.path.exists(".cache"):
+        os.remove(".cache")
+
     return redirect(url_for("getTracks", _external=True))
 
 
@@ -94,11 +99,6 @@ def getTracks():
         offset=0,
         time_range=LONG_TERM,
     )
-
-
-    if os.path.exists(".cache"):
-        os.remove(".cache")
-
 
     return render_template('receipt.html', user_display_name=current_user_name, short_term=short_term, medium_term=medium_term, long_term=long_term, currentTime=gmtime())
 
