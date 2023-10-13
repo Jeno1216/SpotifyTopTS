@@ -24,7 +24,6 @@ def create_spotify_oauth():
     
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
-app.config['SESSION_COOKIE_NAME'] = 'Eriks_Cookie_' + session.get('username', 'default')
 
 @app.route('/')
 def index():
@@ -43,7 +42,12 @@ def redirectPage():
     session.clear() 
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
-    session[TOKEN_CODE] = token_info    
+    session[TOKEN_CODE] = token_info
+
+    # Set the session cookie name based on the username
+    username = sp.current_user()['display_name']  # Obtain the username
+    app.config['SESSION_COOKIE_NAME'] = 'Eriks_Cookie_' + username
+
     return redirect(url_for("getTracks", _external=True))
 
 
