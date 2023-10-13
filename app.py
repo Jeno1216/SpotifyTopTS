@@ -18,12 +18,12 @@ def create_spotify_oauth():
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
         redirect_uri=url_for("redirectPage",_external=True), 
-        scope="user-top-read user-library-read"
+        scope="user-top-read user-library-read user-read-recently-played"
     )
 
-    
 app = Flask(__name__)
 app.secret_key = SECRET_KEY
+app.config['SESSION_COOKIE_NAME'] = 'Eriks Cookie'
 
 @app.route('/')
 def index():
@@ -43,24 +43,21 @@ def redirectPage():
     code = request.args.get('code')
     token_info = sp_oauth.get_access_token(code)
     session[TOKEN_CODE] = token_info
-
-    # Set the session cookie name based on the username
-    username = sp.current_user()['display_name']  # Obtain the username
-    app.config['SESSION_COOKIE_NAME'] = 'Eriks_Cookie_' + username
-
+    print(f"Access Token: {token_info['access_token']}")  # Add this line
     return redirect(url_for("getTracks", _external=True))
 
-
-def get_token():
+def get_token(): 
     token_info = session.get(TOKEN_CODE, None)
-    if not token_info:
-        return None  # Return None if no token is found
+    if not token_info: 
+        raise "exception"
     now = int(time.time())
-    is_expired = token_info['expires_at'] - now < 60
-    if is_expired:
+    is_expired = token_info['expires_at'] - now < 60 
+    if (is_expired): 
         sp_oauth = create_spotify_oauth()
         token_info = sp_oauth.refresh_access_token(token_info['refresh_token'])
-    return token_info
+        session[TOKEN_CODE] = token_info  # Store the new token info in the session
+    return token_info 
+
 
 @app.route('/getTracks')
 def getTracks():
