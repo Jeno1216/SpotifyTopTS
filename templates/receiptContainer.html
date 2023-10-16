@@ -1,82 +1,100 @@
-{% macro receiptContainer(display_name, songs, id, duration) -%}
-<div class="receiptContainer" id="{{ id }}">
-    <h2 class="logo">
-        JENO x SHIG
-    </h2>
-    <p class="period">
-        {{ duration }}
-    </p>
-    <p class="date">
-        ORDER #0001 FOR {{ display_name }}
-    </p>
-    <p class="date">
-       {{currentTime|strftime}}
-    </p>
 
-    <table class="tracks">
-        <thead>
-            <tr>
-                <td class="begin">
-                    QTY
-                </td>
-                <td>
-                    ITEM
-                </td>
-                <td class="length">
-                    AMT
-                </td>
-            </tr>
-        </thead>
-    {% for song in songs %}
+{% macro receiptContainer(display_name, songs, id, duration) -%}
+<div class="receiptContainer " id="{{ id }}" style="display: none; ">
+    <div class="receiptDownload" >
+        <img src="../static/ticket.png" width="300px" style="min-width: 300px;" alt="">
+        <p class="date text-start " style="color: white; position: absolute; width: 80%; font-weight: bolder; top: 110px; left: 50%; transform: translateX(-50%); font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+            Taylor Swift: The Eras Tour
+        </p>
+        <hr class="border-bottom" style="color: white; position: absolute; width: 80%; font-weight: bold; top: 110px; left: 50%; transform: translateX(-50%); font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+        <p class="date text-start " style="color: white; position: absolute; width: 80%; font-weight: bold; top: 135px; left: 50%; transform: translateX(-50%); font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+            {{currentTime|strftime}}
+        </p>
+        <p class="date text-start " style="color: white; position: absolute; width: 80%; font-weight: bold; top: 150px; left: 50%; transform: translateX(-50%); font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+            {{ duration }}
+        </p>
+
+        <p class="date text-start " style="color: white; position: absolute; width: 80%; font-weight: bold; top: 165px; left: 50%; transform: translateX(-50%); font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+            SEAT #0001 FOR {{ display_name }}
+        </p>
+ <table class=" text-start  " style=" color: white; position: absolute; width: 280px; font-weight: bold; top: 190px; left: 50%; transform: translateX(-50%); font-size: 10px; ">
+    <thead>
         <tr>
             <td class="begin">
-                {{ loop.index }}
+                NO
             </td>
-            <td class="name">
-                {{ song.name }} - {{ song.artists[0].name }}
-            </td>
-            <td class="length">
-                {{ song.duration_ms | mmss }}
-            </td>
-        </tr>
-    {% endfor %}
-        <tr class="total-counts">
-            <td class="begin" colspan="2">
-                ITEM COUNT:
+            <td>
+                SONGS
             </td>
             <td class="length">
-                {{ songs | length }}
+                AMT
             </td>
         </tr>
-        <tr class="total-counts-end">
-            <td class="begin" colspan="2">
-                TOTAL:
-            </td>
-            <td class="length">
-                {{ (songs | sum(attribute='duration_ms')) | mmss }}
-            </td>
-        </tr>
-    </table>
-    <p class="date">
-        CARD #: **** **** **** {{ currentTime.tm_year }}
-    </p>
-    <p class="date">
-        AUTH CODE: 123421
-    </p>
-    <p class="date">
-        CARDHOLDER: {{ display_name }}
-    </p>
-    <div class="thanks">
-        <p>
-            THANK YOU FOR VISITING!
-        </p>
-        <img style="width: 80%" src="{{ url_for('static', filename='barcode.png') }}">
-        <p class="website">
-            receiptify.eriktoor.com
-    </p>
+    </thead>
 
-</div>
-</div>
+    {% for song in songs %}
+    <tr class="" >
+        <td class="begin">
+            {{ loop.index }}
+        </td>
+        <td class="name text-start" style="white-space: nowrap; font-weight: bold; overflow: hidden; text-overflow: ellipsis; width: 160px; display: block;">
+            {{ song.name }}
+        </td>
+                <td class="length">
+            {{ song.duration_ms | mmss }}
+        </td>
+    </tr>
+{% endfor %}
+
+<tr class="total-counts">
+    <td class="begin" colspan="2">
+        ITEM COUNT:
+    </td>
+    <td class="length">
+        {{ songs | length }}
+    </td>
+</tr>
+<tr class="total-counts-end">
+    <td class="begin" colspan="2">
+        TOTAL:
+    </td>
+    <td class="length">
+        {{ (songs | sum(attribute='duration_ms')) | mmss }}
+    </td>
+</tr>
 
 
+
+ </table>
+
+ <p class="date text-start " style="color: white; position: absolute; width: 80%; font-weight: bold; top: 395px; left: 50%; transform: translateX(-50%); font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+    CARD #: **** **** **** {{ currentTime.tm_year }}
+</p>
+
+<p class="date text-start " style="color: white; position: absolute; width: 80%; font-weight: bold; top: 410px; left: 50%; transform: translateX(-50%); font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+    AUTH CODE: 123421
+</p>
+<p class="date text-start " style="color: white; position: absolute; width: 80%; font-weight: bold; top: 425px; left: 50%; transform: translateX(-50%); font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+    CARDHOLDER: {{ display_name }}    
+
+</p>
+<p class="date text-start " style="color: white; position: absolute; width: 80%; font-weight: bold; top: 440px; left: 50%; transform: translateX(-50%); font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+    Release date: October 13, 2023    
+</p>
+
+<p class="date text-center " style="color: white; position: absolute; width: 80%; font-weight: bold; top: 470px; left: 50%; transform: translateX(-50%); font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+    THANK YOU FOR BOOKING!
+</p>
+
+<p class="date text-center " style="color: white; position: absolute; width: 80%; font-weight: bold; bottom: 15px; left: 50%; transform: translateX(-50%); font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+    https://swiftify.onrender.com
+</p>
+
+    <img style="width: 80px; position: absolute;   top: 520px; left: 50px;  font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;" src="{{ url_for('static', filename='qr.png') }}">
+    <p class="date text-start " style="color: white; position: absolute; width: 80%; font-weight: bold; top: 545px; left: 41%;  font-size: 10px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+        Get your ticket by simply <br> scanning the QR code!    </p>
+
+        </div>
+
+    </div>
 {%- endmacro %}
